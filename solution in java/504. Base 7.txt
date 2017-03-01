@@ -1,0 +1,26 @@
+Given an integer, return its base 7 string representation.
+
+×ª7½øÖÆ
+
+public class Solution {
+    public String convertToBase7(int num) {
+        if(num>=0&&num<7) return num+"";
+            List<String> cs = new ArrayList();
+            int y = 7;
+            int s = 7;
+        StringBuffer sb = new StringBuffer();
+        sb.append(num>0?"":"-");
+        num = Math.abs(num);
+            while(s>=7){
+                y = num%7;
+                s = num/7;
+                num = s;
+                cs.add(y+"");
+            }
+            if(s!=0) cs.add(s+"");
+            for(int i=cs.size()-1;i>=0;i--){
+                sb.append(cs.get(i));
+            }
+            return sb.toString();
+    }
+}
