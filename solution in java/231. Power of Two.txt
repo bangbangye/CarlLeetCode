@@ -1,0 +1,21 @@
+Given an integer, write a function to determine if it is a power of two.
+
+判断一个数是不是2的幂乘
+
+public class Solution {
+    public boolean isPowerOfTwo(int n) {
+     int res = n;
+     if(n==0) return false;
+     
+     while(res!=0){
+         if((res&1)==1&&(res>>1)!=0){
+             return false;
+         }
+         res>>=1;
+     }
+     return true;
+    }
+}
+
+一行答案
+return n>0 && ((n & (n-1)) == 0);
