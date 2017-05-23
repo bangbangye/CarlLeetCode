@@ -1,0 +1,65 @@
+Total Accepted: 175046
+Total Submissions: 493677
+Difficulty: Easy
+Contributor: LeetCode
+Given a linked list, determine if it has a cycle in it.
+
+Follow up:
+Can you solve it without using extra space?
+
+
+My Solution:
+
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+
+        Map<ListNode,Integer> map = new HashMap<>();
+        while(head!=null&&head.next!=null){
+            map.put(head,1);
+            int i = 0;
+            if(map.get(head.next)!=null&&1==map.get(head.next))
+                return true;
+            head = head.next;
+        }
+        return false;
+        
+    }
+}
+
+Best Solution:
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) {
+ *         val = x;
+ *         next = null;
+ *     }
+ * }
+ */
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+
+        ListNode slow = head;
+        ListNode fast = head;
+        while(fast!=null&&fast.next!=null){
+            slow = slow.next;
+            fast = fast.next.next;
+            if(fast==slow)
+                return true;
+        }
+        return false;
+    }
+}

@@ -1,0 +1,47 @@
+Given a set of candidate numbers (C) (without duplicates) and a target number (T), find all unique combinations in C where the candidate numbers sums to T.
+
+The same repeated number may be chosen from C unlimited number of times.
+
+Note:
+All numbers (including target) will be positive integers.
+The solution set must not contain duplicate combinations.
+For example, given candidate set [2, 3, 6, 7] and target 7, 
+A solution set is: 
+[
+  [7],
+  [2, 2, 3]
+]
+
+My solution:
+public class Solution {
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>> result = new ArrayList<>();
+        int oldSum = 0;
+        List<Integer> oldTest = new ArrayList<>();
+        combineSum(oldTest,oldSum,candidates,0,target,result);
+        return result;
+    }
+
+    public void combineSum(List<Integer> oldTest,int oldSum,int[] candidates,int start,int target,List<List<Integer>> result){
+        List<Integer> test = new ArrayList<>();
+        test.addAll(oldTest);
+        int sum;
+        for(int i=start;i<candidates.length;i++){
+            sum = oldSum+candidates[i];
+            if(sum<target){
+                test.add(candidates[i]);
+                combineSum(test,sum,candidates,i,target,result);
+                test.remove(test.size()-1);
+            }else if(sum==target){
+                test.add(candidates[i]);
+                result.add(test);
+                break;
+            }else{
+                break;
+            }
+        }
+    }
+}
+
+Best Solution:
