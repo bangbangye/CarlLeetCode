@@ -1,0 +1,68 @@
+Given two arrays, write a function to compute their intersection.
+
+Example:
+Given nums1 = [1, 2, 2, 1], nums2 = [2, 2], return [2].
+
+Note:
+Each element in the result must be unique.
+The result can be in any order.
+
+
+My Solution:
+
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+        Map<Integer,Integer> dic = new HashMap<>();
+        for(int i : nums1){
+            dic.put(i,1);
+        }
+        Set<Integer> res = new HashSet<>();
+        
+        for(int i : nums2){
+            if(dic.containsKey(i))
+                res.add(i);
+        }
+        int [] inter = new int[res.size()];
+        int i=0;
+        for(int num:res)
+            inter[i++] = num;
+        return inter;
+    }
+}
+
+Other Solution: Á½µã×·½ø
+public class Solution {
+    public int[] intersection(int[] nums1, int[] nums2) {
+  /*      Set<Integer> dic = new HashSet<>();
+        for(int i : nums1){
+            dic.add(i);
+        }
+        Set<Integer> res = new HashSet<>();
+        
+        for(int i : nums2){
+            if(dic.contains(i))
+                res.add(i);
+        }*/
+        Set<Integer> res = new HashSet<>();
+        Arrays.sort(nums1);
+        Arrays.sort(nums2);
+        int i = 0;
+        int j = 0;
+        while(i<nums1.length&&j<nums2.length){
+            if(nums1[i]<nums2[j])
+                i++;
+            else if(nums1[i]>nums2[j])
+                j++;
+            else{
+                res.add(nums1[i]);
+                i++;j++;
+            }
+        }
+        
+        int [] inter = new int[res.size()];
+        int k=0;
+        for(int num:res)
+            inter[k++] = num;
+        return inter;
+    }
+}

@@ -1,0 +1,47 @@
+The count-and-say sequence is the sequence of integers beginning as follows:
+1, 11, 21, 1211, 111221, ...
+
+1 is read off as "one 1" or 11.
+11 is read off as "two 1s" or 21.
+21 is read off as "one 2, then one 1" or 1211.
+Given an integer n, generate the nth sequence.
+
+Note: The sequence of integers will be represented as a string.
+
+My sulotion:
+public class Solution {
+    public String countAndSay(int n) {
+        if(n==1)
+            return "1";
+        if(n==2)
+            return "11";
+        String s = "11";
+        for(int i=0;i<n-2;i++){
+            s = calculte(s);
+        }
+        return s;
+    }
+    
+    public String calculte(String s){
+        char[] cs = s.toCharArray();
+        char old = cs[0];
+        char news;
+        int count = 1;
+        StringBuffer sb = new StringBuffer();
+        for(int i=1;i<cs.length;i++){
+            news = cs[i];
+            if(old != news){
+                sb.append(count+""+old);
+                count = 1;
+            }else{
+                count++;
+            }
+            old = news;
+        }
+        sb.append(count+""+old);
+        return sb.toString();
+    }
+}
+
+Best solution:
+
