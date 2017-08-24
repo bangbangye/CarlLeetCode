@@ -1,0 +1,107 @@
+Two elements of a binary search tree (BST) are swapped by mistake.
+
+Recover the tree without changing its structure.
+
+Note:
+A solution using O(n) space is pretty straight forward. Could you devise a constant space solution?
+
+Solution: 中序遍历 O(logn)空间
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    TreeNode pre = new TreeNode(Integer.MIN_VALUE);
+    TreeNode first = null;
+    TreeNode second = null;
+    public void recoverTree(TreeNode root) {
+        traverse(root);
+        int temp = first.val;
+        first.val = second.val;
+        second.val = temp;
+    }
+    //in-order traverse 中序遍历
+    public void traverse(TreeNode root){
+        if(root==null) return;
+        traverse(root.left);
+        
+        //do somthing
+        if(first==null&&root.val<pre.val)
+            first = pre;
+        if(first!=null&&root.val<pre.val)
+            second = root;
+        pre = root;
+        
+        traverse(root.right);
+    }
+}
+
+Best Solution: Morris Traverse http://www.cnblogs.com/AnnieKim/archive/2013/06/15/morristraversal.html
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    TreeNode pre = new TreeNode(Integer.MIN_VALUE);
+    TreeNode first = null;
+    TreeNode second = null;
+    TreeNode temp = null;
+    public void recoverTree(TreeNode root) {
+        if(root==null) return ;
+        
+        while(root!=null){
+            if(root.left==null){
+                if(first==null&&pre.val>root.val){
+                    first = pre;
+                    second = root;
+                }else if(pre.val>root.val){
+                    second = root;
+                }
+                pre = root;
+                root = root.right;
+            }else{
+                //find predecesser 找到前序节点
+                temp = root.left;
+                while(temp.right!=null&&temp.right!=root){
+                    temp = temp.right;
+                }
+                //如果找到前序节点，让它指向当前结点
+                if(temp.right==null){
+                    temp.right = root;
+                    root = root.left;
+                }else{
+                    //前序节点的右节点已经指向当前(来过了)
+                    temp.right=null;
+                    if(first==null&&pre.val>root.val){
+                        first = pre;
+                        second = root;
+                    }else if(pre.val>root.val){
+                        second = root;
+                    }
+                    pre = root;
+                    root = root.right;
+                }
+            }
+            
+        }
+        		// swap two node values;
+		if(first!= null && second != null){
+		    int t = first.val;
+		    first.val = second.val;
+		    second.val = t;
+		}
+    }
+
+}

@@ -1,0 +1,72 @@
+Given two strings s1 and s2, write a function to return true if s2 contains the permutation of s1. In other words, one of the first string's permutations is the substring of the second string.
+
+Example 1:
+Input:s1 = "ab" s2 = "eidbaooo"
+Output:True
+Explanation: s2 contains one permutation of s1 ("ba").
+Example 2:
+Input:s1= "ab" s2 = "eidboaoo"
+Output: False
+Note:
+The input strings only contain lower case letters.
+The length of both given strings is in range [1, 10,000].
+
+Sulotion 1: slide window 滑动窗口，一个进一个出
+class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+        int[] flag = new int[26];
+        int len1 = s1.length();
+        int len2 = s2.length();
+        if(len1>len2) return false;
+	//读入len1个窗口数组
+        for(int i=0;i<len1;i++){
+            flag[s1.charAt(i)-'a']--;
+            flag[s2.charAt(i)-'a']++;
+        }
+        if(checkZero(flag)) return true;
+        //一个进一个出的判断
+	for(int i=len1;i<len2;i++){
+            flag[s2.charAt(i)-'a']++;
+            flag[s2.charAt(i-len1)-'a']--;
+            if(checkZero(flag)) return true;
+        }
+        return false;
+    }
+    
+    public boolean checkZero(int[] a){
+        for(int i=0;i<a.length;i++){
+            if(a[i]!=0)
+                return false;
+        }
+        return true;
+    }
+}
+
+Solution 2（better）:two pointers 两指针扫描
+
+class Solution {
+    public boolean checkInclusion(String s1, String s2) {
+        int[] flag = new int[128];
+        int len1 = s1.length();
+        int len2 = s2.length();
+        if(len1>len2) return false;
+        for(int i=0;i<len1;i++){
+            flag[s1.charAt(i)]--;
+        }
+        
+        for(int l=0,r=0;r<len2;r++){
+            //如果有S1以外的字符
+            if(++flag[s2.charAt(r)]>0){
+                //把之前读入的清零
+                while(--flag[s2.charAt(l++)]!=0);
+            }else{
+                if((r-l+1)==len1) return true;
+            }
+        }
+        
+        return false;
+    }
+    
+
+}
+
