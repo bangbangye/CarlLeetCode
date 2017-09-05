@@ -1,0 +1,92 @@
+Given a non-empty array of numbers, a0, a1, a2, … , an-1, where 0 ≤ ai < 231.
+
+Find the maximum result of ai XOR aj, where 0 ≤ i, j < n.
+
+Could you do this in O(n) runtime?
+
+Example:
+
+Input: [3, 10, 5, 25, 2, 8]
+
+Output: 28
+
+Explanation: The maximum result is 5 ^ 25 = 28.
+
+Solution: 位运算，从第31位开始倒推
+
+class Solution {
+    public int findMaximumXOR(int[] nums) {
+        int mask = 0;
+        
+        int max = 0;
+        for(int i=31;i>=0;i--){
+            //标记当前位为1
+            mask |= (1<<i);
+            Set<Integer> set = new HashSet();
+            //将nums中的数的i以后位置0
+            for(int num:nums){
+                set.add(num&mask);
+            }
+            //将max右一位变为1进行验证
+            int temp = max|(1<<i);
+            //验证是否有temp^b = a，则a^b = temp,max为当前预估的temp
+            for(int prefix:set){
+                if(set.contains(temp^prefix)){
+                    max = temp;
+                    break;
+                }
+            }
+        }
+        return max;
+    }
+}
+
+Solution: Trie树,前缀树，将num按照32位插入树种
+class Solution {
+    
+    class Trie{
+        Trie[] children;
+        
+        public Trie(){
+            children = new Trie[2];
+        }
+    }
+    public int findMaximumXOR(int[] nums) {
+        if(nums==null||nums.length==0) return 0;
+        
+        Trie root = new Trie();
+        
+        
+        for(int num:nums){
+            Trie curNode = root;
+            for(int i=31;i>=0;i--){
+                //找到num的第i位数
+                int curbit = (num>>>i)&1;
+                //填充当前节点的curbit子节点
+                if(curNode.children[curbit]==null)
+                    curNode.children[curbit] = new Trie();
+                curNode =  curNode.children[curbit];
+            }
+        }
+        int max = Integer.MIN_VALUE;
+        for(int num:nums){
+            Trie curNode = root;
+            int curSum = 0;
+            for(int i=31;i>=0;i--){
+                //找到num的第i位数
+                int curbit = (num>>>i)&1;
+                //判断当前位的XOR是否存在
+                if(curNode.children[curbit^1]!=null){
+                    //XOR最大值在当前位为1
+                    curSum += (1<<i);
+                    curNode = curNode.children[curbit^1];
+                }else{
+                    //XOR最大值在当前位没有1匹配，转到下一位
+                    curNode = curNode.children[curbit];
+                }
+            }
+            max = Math.max(max,curSum);
+        }
+        return max;
+    }
+}
