@@ -1,0 +1,108 @@
+There are a total of n courses you have to take, labeled from 0 to n - 1.
+
+Some courses may have prerequisites, for example to take course 0 you have to first take course 1, which is expressed as a pair: [0,1]
+
+Given the total number of courses and a list of prerequisite pairs, is it possible for you to finish all courses?
+
+For example:
+
+2, [[1,0]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0. So it is possible.
+
+2, [[1,0],[0,1]]
+There are a total of 2 courses to take. To take course 1 you should have finished course 0, and to take course 0 you should also have finished course 1. So it is impossible.
+
+Note:
+The input prerequisites is a graph represented by a list of edges, not adjacency matrices. Read more about how a graph is represented.
+You may assume that there are no duplicate edges in the input prerequisites.
+
+Solution: BFS ,Topological Sort
+
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        
+        ArrayList<Integer>[] graph = new ArrayList[numCourses];
+        int[] inDegree = new int[numCourses];
+        int count = 0;
+        
+        for(int i=0;i<numCourses;i++){
+            graph[i] = new ArrayList<Integer>();
+        }
+        //构建图及入度表
+        for(int i=0;i<prerequisites.length;i++){
+            graph[prerequisites[i][1]].add(prerequisites[i][0]);
+            inDegree[prerequisites[i][0]]++;
+        }
+        Queue<Integer> que = new LinkedList();
+        //入度为0的起点入队列
+        for(int i=0;i<inDegree.length;i++){
+            if(inDegree[i]==0){
+                que.add(i);
+                count++;
+            }
+        }
+        //BFS开始拓扑排序
+        while(!que.isEmpty()){
+            int curCourse = que.poll();
+            //寻找邻接的节点，入度减一
+            for(int i=0;i<graph[curCourse].size();i++){
+                int pointer = graph[curCourse].get(i);
+                inDegree[pointer]--;
+                if(inDegree[pointer]==0){
+                    count++;
+                    que.add(pointer);
+                }
+            }
+        }
+        if(count==numCourses)
+            return true;
+        else
+            return false;
+    }
+}
+
+Solution: DFS,从每个起点开始在图中寻找圈circle
+class Solution {
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        
+        ArrayList<Set<Integer>> graph = new ArrayList();
+        boolean[] visited = new boolean[numCourses];
+        int count = 0;
+        
+        for(int i=0;i<numCourses;i++){
+            graph.add(new HashSet<Integer>());
+        }
+        //构建图及入度表
+        for(int i=0;i<prerequisites.length;i++){
+            graph.get(prerequisites[i][1]).add(prerequisites[i][0]);
+        }
+        //DFS依次判定每个起点是否有圈
+        for(int i=0;i<numCourses;i++){
+            if(graph.get(i).size()!=0){
+                if(!dfs(visited,graph,i))
+                    return false;
+            }
+        }
+        return true;
+    }
+    
+    //DFS递归判断图中是否有环
+    public boolean dfs(boolean[] visited,ArrayList<Set<Integer>> graph,int curCourse){
+        //此次递归中出现过已访问的点，及图中存在圈
+        if(visited[curCourse])
+            return false;
+        else 
+            visited[curCourse] = true;
+        //循环判断邻接节点,已经验证过的子路线，从set中删除不再重复计算
+        Iterator<Integer> it = graph.get(curCourse).iterator();
+        while(it.hasNext()){
+            Integer i = it.next();
+            if(!dfs(visited,graph,i))
+                return false;
+            it.remove();
+        }
+        //如果当前递归路线完成，将当前节点恢复初始状态
+        visited[curCourse] = false;
+        return true;
+    }
+}
