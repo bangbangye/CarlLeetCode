@@ -1,0 +1,69 @@
+Given a Binary Search Tree and a target number, return true if there exist two elements in the BST such that their sum is equal to the given target.
+
+Example 1:
+Input: 
+    5
+   / \
+  3   6
+ / \   \
+2   4   7
+
+Target = 9
+
+Output: True
+Example 2:
+Input: 
+    5
+   / \
+  3   6
+ / \   \
+2   4   7
+
+Target = 28
+
+Output: False
+
+Solution: 
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean findTarget(TreeNode root, int k) {
+        Map<Integer,Integer> map = new HashMap();
+        
+        return inOrderTraverse(map,root,k);
+    }
+    //中序遍历求解
+    boolean inOrderTraverse(Map<Integer,Integer> map,TreeNode root, int k){
+        if(root==null) return false;
+        
+        if(inOrderTraverse(map,root.left,k)) return true;
+        
+        if(map.containsKey(k-root.val)) return true;
+        map.put(root.val,1);
+        
+        if(inOrderTraverse(map,root.right,k)) return true;
+        
+        return false;
+    }
+    //先序遍历求解
+    boolean preOrderTraverse(Map<Integer,Integer> map,TreeNode root, int k){
+        if(root==null) return false;
+        
+        if(map.containsKey(k-root.val)) return true;
+        map.put(root.val,1);
+        
+        if(preOrderTraverse(map,root.left,k)) return true;
+        
+        if(preOrderTraverse(map,root.right,k)) return true;
+        
+        return false;
+    }
+}
+

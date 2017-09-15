@@ -1,0 +1,25 @@
+You are climbing a stair case. It takes n steps to reach to the top.
+
+Each time you can either climb 1 or 2 steps. In how many distinct ways can you climb to the top?
+
+Note: Given n will be a positive integer.
+
+Solution: 
+class Solution {
+    //动态规划，斐波那契数列。当前步为n-1步时跳1，和n-2步时跳2的情况组合。
+    public int climbStairs(int n) {
+        if(n==1) return 1;
+        if(n==2) return 2;
+        int preTwo = 1;
+        int preOne = 2;
+        int sum = 0;
+        int idx = 3;
+        while(idx<=n){
+            sum = preTwo+preOne;
+            preTwo = preOne;
+            preOne = sum;
+            idx++;
+        }
+        return sum;
+    }
+}
