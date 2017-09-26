@@ -1,0 +1,66 @@
+Given an integer matrix, find the length of the longest increasing path.
+
+From each cell, you can either move to four directions: left, right, up or down. You may NOT move diagonally or move outside of the boundary (i.e. wrap-around is not allowed).
+
+Example 1:
+
+nums = [
+  [9,9,4],
+  [6,6,8],
+  [2,1,1]
+]
+Return 4
+The longest increasing path is [1, 2, 6, 9].
+
+Example 2:
+
+nums = [
+  [3,4,5],
+  [3,2,6],
+  [2,2,1]
+]
+Return 4
+The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.
+
+
+Solution: DFS ,cache
+
+class Solution {
+    //方向矢量
+    private static int[][] dirs = new int[][]{{0,1},{1,0},{0,-1},{-1,0}};
+    public int longestIncreasingPath(int[][] matrix) {
+        if(matrix.length==0) return 0;
+        int row = matrix.length;
+        int col = matrix[0].length;
+        //记录每个节点的值，防止重复访问
+        int[][] cache = new int[row][col];
+        
+        int max =1;
+        for(int i=0;i<row;i++){
+            for(int j=0;j<col;j++){
+                //DFS计算每个节点的值
+                int cur = dfs(matrix,row,col,i,j,cache);
+                max = Math.max(max,cur);
+            }
+        }
+        return max;        
+    }
+    
+    int dfs(int[][] matrix,int row,int col,int i,int j,int[][] cache){
+        //已经计算过
+        if(cache[i][j]!=0) return cache[i][j];
+        int max = 1;
+        //向四个方向递归DFS
+        for(int[] dir:dirs){
+            int x = i+dir[0];
+            int y = j+dir[1];
+            //超限或者没有增序
+            if(x<0||x>=row||y<0||y>=col||matrix[i][j]>=matrix[x][y]) continue;
+            //符合增序，继续DFS
+            int c = 1+dfs(matrix,row,col,x,y,cache);
+            max = Math.max(max,c);
+        }
+        cache[i][j] = max;
+        return max;
+    }
+}

@@ -1,0 +1,25 @@
+Description:
+
+Count the number of prime numbers less than a non-negative number, n.
+
+Solution:
+
+class Solution {
+    public int countPrimes(int n) {
+        if(n<3) return 0;
+        
+        int count = 1;
+        boolean[] f = new boolean[n+1];
+        double sqr = Math.round(Math.sqrt(n));
+        for(int i=3;i<n;i+=2){
+            if(!f[i]){
+                count++;
+            }
+            if(i>sqr) continue;
+            for(int j=i*i;j<n;j+=i){
+                f[j] = true;
+            }
+        }
+        return count;
+    }
+}
