@@ -1,0 +1,51 @@
+Given a string S, you are allowed to convert it to a palindrome by adding characters in front of it. Find and return the shortest palindrome you can find by performing this transformation.
+
+For example:
+
+Given "aacecaaa", return "aaacecaaa".
+
+Given "abcd", return "dcbabcd".
+
+s
+Solution:
+
+class Solution {
+    public String shortestPalindrome(String s) {
+        //问题先转化为求首字母开头的最大回文串
+        //再继续转化为s#s.reverse的KMP数组
+        String t = s+"#"+ new StringBuffer(s).reverse().toString();
+        int[] table = getKMPTable(t);
+        return new StringBuffer(s.substring(table[table.length-1])).reverse().toString()+s;
+    }
+    
+    //KMP算法http://blog.sina.com.cn/s/blog_6a2787d40102uxsm.html
+    //http://www.ituring.com.cn/article/59881
+    int[] getKMPTable(String s){
+        int[] table = new int[s.length()];
+        
+        int idx = 0;
+        //求KMP最大公共前后缀过程
+        for(int i=1;i<s.length();i++){
+            if(s.charAt(idx)==s.charAt(i)){
+                idx++;
+                table[i] = table[i-1]+1;
+            }else{
+                idx = table[i-1];
+                
+                while(idx>0&&s.charAt(idx)!=s.charAt(i)){
+                    idx = table[idx-1];
+                }
+                if(s.charAt(idx)==s.charAt(i)){
+                    idx++;
+                }
+                table[i] = idx;
+            }
+            
+        }
+        return table;
+    }
+}
+
+
+
+
