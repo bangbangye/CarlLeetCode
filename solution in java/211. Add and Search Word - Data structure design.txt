@@ -1,0 +1,84 @@
+Design a data structure that supports the following two operations:
+
+void addWord(word)
+bool search(word)
+search(word) can search a literal word or a regular expression string containing only letters a-z or .. A . means it can represent any one letter.
+
+For example:
+
+addWord("bad")
+addWord("dad")
+addWord("mad")
+search("pad") -> false
+search("bad") -> true
+search(".ad") -> true
+search("b..") -> true
+Note:
+You may assume that all words are consist of lowercase letters a-z.
+
+Solution:
+
+class WordDictionary {
+
+    //将单词分解成树：字典树，每个字母节点有26个子节点
+    class TrieNode{
+        TrieNode[] children = new TrieNode[26];
+        String item = "";
+    }
+    
+    TrieNode root;
+    
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        root = new TrieNode();
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        //将单词放入字典树
+        TrieNode node = root;
+        //将单词第一个字母放入root下的子节点，依次循环
+        for(char c:word.toCharArray()){
+            if(node.children[c-'a']!=null){
+                node = node.children[c-'a'];
+            }else{
+                node.children[c-'a'] = new TrieNode();
+                node = node.children[c-'a'];
+            }
+        }
+        node.item = word;
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return match(word.toCharArray(),0,root);
+    }
+    
+    boolean match(char[] cs,int idx,TrieNode node){
+        //边界条件,已经到最后一个字母时，如果当前node不是空，说明有匹配值
+        if(idx==cs.length) return !node.item.equals("");
+        if(cs[idx]!='.'){
+            if(node.children[cs[idx]-'a']==null)
+                return false;
+            else{
+                return match(cs,idx+1,node.children[cs[idx]-'a']);
+            }
+        }else{
+            //如果是'.'，回溯查找当前节点的每一个子节点
+            for(int i=0;i<26;i++){
+                if(node.children[i]!=null){
+                    if(match(cs,idx+1,node.children[i]))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */

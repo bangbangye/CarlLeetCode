@@ -1,0 +1,25 @@
+Given an array of non-negative integers, you are initially positioned at the first index of the array.
+
+Each element in the array represents your maximum jump length at that position.
+
+Determine if you are able to reach the last index.
+
+For example:
+A = [2,3,1,1,4], return true.
+
+A = [3,2,1,0,4], return false.
+
+Solution: Greed
+
+class Solution {
+    public boolean canJump(int[] nums) {
+        //每个位置上能覆盖的到的最大距离，如果当前坐标大于之前最大的覆盖距离，那么这个点就达不到了
+        int maxDis = 0;
+        for(int i=0;i<=maxDis;i++){
+            maxDis = Math.max(maxDis,i+nums[i]);
+            //最大覆盖距离超过数组长度，那么肯定能够到达最后一点
+            if(maxDis>=nums.length-1) return true;
+        }
+        return false;
+    }
+}

@@ -62,7 +62,7 @@ Answer two:
 
 public class Solution {
     public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-        
+        //开始set，结束set，从开始到结束进行bfs查找
         Set<String> beginSet = new HashSet<String>(), endSet = new HashSet<String>();
         
         Set<String> wordDict = new HashSet<String>();
@@ -76,6 +76,7 @@ public class Solution {
         endSet.add(endWord);
         
         while (!beginSet.isEmpty()&&!endSet.isEmpty()) {
+            //两端递进查找，保持beginset为较小的set，减少循环次数
             Set<String> temp = new HashSet<String>();
             if(beginSet.size()>endSet.size()){
                 temp = beginSet;
@@ -83,6 +84,7 @@ public class Solution {
                 endSet = temp;
             }
             Set<String> toAdd = new HashSet<String>();
+            //bfs查找每一个beginset中的单词是否能到endset
             for (String each : beginSet) {
                 for (int i = 0; i < each.length(); i++) {
                     char[] chars = each.toCharArray();
@@ -93,6 +95,7 @@ public class Solution {
                         if(endSet.contains(word)){
                             return distance+1;
                         }
+                        //如果这个单词已经用过了，从字典里删除已减少循环次数
                         if (wordDict.contains(word)) {
                             toAdd.add(word);
                             wordDict.remove(word);

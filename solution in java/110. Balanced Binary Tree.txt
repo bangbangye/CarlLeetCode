@@ -1,0 +1,61 @@
+Given a binary tree, determine if it is height-balanced.
+
+For this problem, a height-balanced binary tree is defined as a binary tree in which the depth of the two subtrees of every node never differ by more than 1.
+
+Solution1: top-->>down
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    //从顶往下判断，先计算整个树的左右，再继续计算左右子树，BFS
+    public boolean isBalanced(TreeNode root) {
+        if(root==null) return true;
+        int left = depth(root.left);
+        int right = depth(root.right);
+        return Math.abs(left-right)<2&&isBalanced(root.left)&&isBalanced(root.right);
+    }
+    int depth(TreeNode root){
+        if(root==null) return 0;
+        
+        return Math.max(depth(root.left),depth(root.right))+1;
+    }
+}
+
+Solution2:down-->top, dfs不用先把所有树高度判断出来
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    //从底部往顶部判断，DFS
+    public boolean isBalanced(TreeNode root) {
+        return dfsDepth(root)!=-1;
+    }
+    //总体是一个后序遍历
+    int dfsDepth(TreeNode root){
+        if(root==null) return 0;
+        //先进行左树dfs判断
+        int left = dfsDepth(root.left);
+        if(left==-1) return -1;
+        //再进行右数dfs判断
+        int right = dfsDepth(root.right);
+        if(right==-1) return -1;
+        
+        if(Math.abs(left-right)>1) return -1;
+        return Math.max(left,right)+1;
+    }
+}
+

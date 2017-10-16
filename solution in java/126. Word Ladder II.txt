@@ -1,0 +1,119 @@
+Given two words (beginWord and endWord), and a dictionary's word list, find all shortest transformation sequence(s) from beginWord to endWord, such that:
+
+Only one letter can be changed at a time
+Each transformed word must exist in the word list. Note that beginWord is not a transformed word.
+For example,
+
+Given:
+beginWord = "hit"
+endWord = "cog"
+wordList = ["hot","dot","dog","lot","log","cog"]
+Return
+  [
+    ["hit","hot","dot","dog","cog"],
+    ["hit","hot","lot","log","cog"]
+  ]
+Note:
+Return an empty list if there is no such transformation sequence.
+All words have the same length.
+All words contain only lowercase alphabetic characters.
+You may assume no duplicates in the word list.
+You may assume beginWord and endWord are non-empty and are not the same.
+UPDATE (2017/1/20):
+The wordList parameter had been changed to a list of strings (instead of a set of strings). Please reload the code definition to get the latest changes.
+
+Solution：Graph，bfs，dfs，回溯
+
+class Solution {
+    public List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        Set<String> dict = new HashSet(wordList);
+        List<List<String>> res = new ArrayList();
+        //有向图的邻接表，只记录变化路径上的节点的不重复邻接，以防形成环
+        Map<String,List<String>> adjacents = new HashMap();
+        //每个节点在变化路径上的层级，用来查找最短路径
+        Map<String,Integer> levels = new HashMap();
+        List<String> sol = new ArrayList();
+        
+        levels.put(beginWord,0);
+        dict.add(beginWord);
+        
+        bfs(beginWord,endWord,dict,adjacents,levels);
+        dfs(beginWord,endWord,dict,adjacents,levels,sol,res);
+        
+        return res;
+    }
+    //寻找最短路径，bfs来构建有向邻接表，用来标记变化路径上的每个节点的邻接节点以及所在层数
+    void bfs(String start,String end,Set<String> dict,Map<String,List<String>> adjacents,Map<String,Integer> levels){
+        for(String word : dict){
+            adjacents.put(word,new ArrayList<String>());
+        }
+        //用队列来遍历每层元素查找他们的邻接元素
+        Queue<String> queue = new LinkedList();
+        queue.offer(start);
+        boolean ended = false;
+        while(!queue.isEmpty()){
+            int size = queue.size();
+            List<String> ads = new ArrayList();
+            //限制在本层内进行动作
+            for(int i=0;i<size;i++){
+                String cur = queue.poll();
+                int curLevel = levels.get(cur);
+                //依次a-z判断当前word的邻接节点
+                ads = getAdjacents(cur,dict);
+                //将邻接节点放入有向图和层数表
+                for(String ad:ads){
+                    adjacents.get(cur).add(ad);
+                    //访问过的节点不再增加层级，防止形成环
+                    if(!levels.containsKey(ad)){
+                        levels.put(ad,curLevel+1);
+                        if(ad.equals(end))
+                            ended = true;
+                        else
+                            //放入下一层级待命
+                            queue.offer(ad);
+                    }
+                }
+            }
+            //已经变化到了end，停止寻找
+            if(ended)
+                break;
+        }
+        
+    }
+    //依次a-z判断当前word的邻接节点
+    List<String> getAdjacents(String word,Set<String> dict){
+        char[] cs = word.toCharArray();
+        List<String> ads = new ArrayList();
+        for(int i=0;i<cs.length;i++){
+            for(char c='a';c<='z';c++){
+                char old = cs[i];
+                cs[i] = c;
+                String newWord = new String(cs);
+                if(dict.contains(newWord)){
+                    ads.add(newWord);
+                }
+                cs[i] = old;
+            }
+        }
+        return ads;
+    }
+    //dfs回溯查找，从start开始到end的最短路径，并进行记录
+    void dfs(String cur,String end,Set<String> dict,Map<String,List<String>> adjacents,Map<String,Integer> levels,
+             List<String> sol, List<List<String>> res){
+        sol.add(cur);
+        if(cur.equals(end)){
+            res.add(new ArrayList(sol));
+        }else{
+            List<String> ads = adjacents.get(cur);
+            for(String ad:ads){
+                //邻接节点中，层级相差为1的才是变化路径上的节点
+                if(levels.get(cur) == (levels.get(ad)-1)){
+                    //继续dfs
+                    dfs(ad,end,dict,adjacents,levels,sol,res);
+                }
+            }
+        }
+        //回溯结束处理
+        sol.remove(sol.size()-1);
+    }
+}
